@@ -76,24 +76,107 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoles } from '~/composables/useRoles'
 import Modal from '~/components/Modal.vue'
 import RolForm from '~/components/RolForm.vue'
 import RolTable from '~/components/RolTable.vue'
+
+const API_URL = 'http://localhost:3000/api/roles'
+
+interface Rol {
+  rol_id: number
+  nombre_rol: string
+  descripcion: string
+}
 
 definePageMeta({
   layout: 'default',
 })
 
-const { roles, loading, error, fetchRoles, createRol, updateRol, deleteRol } = useRoles()
-
+// Estados reactivos
+const roles = ref<Rol[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
 const isModalOpen = ref(false)
 const isEditMode = ref(false)
-const currentRol = ref({ nombre_rol: '', descripcion: '' })
-const formRef = ref(null)
+const currentRol = ref<Omit<Rol, 'rol_id'>>({ nombre_rol: '', descripcion: '' })
+const formRef = ref<{ submit: () => void } | null>(null)
 const showDeleteConfirm = ref(false)
-const rolToDelete = ref(null)
+const rolToDelete = ref<number | null>(null)
 
+// Funciones de la API
+const fetchRoles = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const data = await $fetch<Rol[]>(API_URL)
+    roles.value = Array.isArray(data) ? data : []
+  } catch (err) {
+    error.value = (err as Error).message
+  } finally {
+    loading.value = false
+  }
+}
+
+const createRol = async (datos: Omit<Rol, 'rol_id'>) => {
+  loading.value = true
+  error.value = null
+  try {
+    const newRol = await $fetch<Rol>(API_URL, {
+      method: 'POST',
+      body: datos,
+    })
+    roles.value.push(newRol)
+    return newRol
+  } catch (err) {
+    error.value = (err as Error).message
+    throw err
+  } finally {
+    loading.value = false
+  }
+}
+
+const updateRol = async (id: number, datos: Omit<Partial<Rol>, 'rol_id'>) => {
+  loading.value = true
+  error.value = null
+  try {
+    const updatedRol = await $fetch<Rol>(`${API_URL}/${id}`, {
+      method: 'PATCH',
+      body: datos,
+    })
+    const index = roles.value.findIndex(r => r.rol_id === id)
+    if (index !== -1) {
+      roles.value[index] = {
+        ...roles.value[index],
+        ...updatedRol,
+        rol_id: id
+      }
+    }
+    return updatedRol
+  } catch (err) {
+    error.value = (err as Error).message
+    throw err
+  } finally {
+    loading.value = false
+  }
+}
+
+const deleteRol = async (id: number) => {
+  loading.value = true
+  error.value = null
+  try {
+    await $fetch(`${API_URL}/${id}`, {
+      method: 'DELETE',
+    })
+    roles.value = roles.value.filter(r => r.rol_id !== id)
+  } catch (err) {
+    error.value = (err as Error).message
+    throw err
+  } finally {
+    loading.value = false
+  }
+}
+
+// Inicializar datos
 onMounted(() => {
   fetchRoles()
 })
@@ -104,7 +187,7 @@ const openCreateModal = () => {
   isModalOpen.value = true
 }
 
-const openEditModal = (rol) => {
+const openEditModal = (rol: Rol) => {
   isEditMode.value = true
   currentRol.value = { ...rol }
   isModalOpen.value = true
@@ -115,34 +198,38 @@ const closeModal = () => {
 }
 
 const handleSave = () => {
-  formRef.value?.submit()
-}
-
-const handleFormSubmit = async (formData) => {
-  try {
-    if (isEditMode.value) {
-      await updateRol(currentRol.value.rol_id, formData)
-    } else {
-      await createRol(formData)
-    }
-    closeModal()
-  } catch (err) {
-    console.error('Error:', err)
+  if (formRef.value) {
+    formRef.value.submit()
   }
 }
 
-const confirmDelete = (rolId) => {
+const handleFormSubmit = async (formData: Omit<Rol, 'rol_id'>) => {
+  try {
+    if (isEditMode.value && 'rol_id' in currentRol.value) {
+      await updateRol((currentRol.value as Rol).rol_id, formData)
+    } else {
+      await createRol(formData)
+    }
+    isModalOpen.value = false
+  } catch (error) {
+    console.error('Error al guardar el rol:', error)
+  }
+}
+
+const confirmDelete = (rolId: number) => {
   rolToDelete.value = rolId
   showDeleteConfirm.value = true
 }
 
 const handleDelete = async () => {
-  try {
-    await deleteRol(rolToDelete.value)
-    showDeleteConfirm.value = false
-    rolToDelete.value = null
-  } catch (err) {
-    console.error('Error:', err)
+  if (rolToDelete.value !== null) {
+    try {
+      await deleteRol(rolToDelete.value)
+      showDeleteConfirm.value = false
+      rolToDelete.value = null
+    } catch (error) {
+      console.error('Error al eliminar el rol:', error)
+    }
   }
 }
 </script>
