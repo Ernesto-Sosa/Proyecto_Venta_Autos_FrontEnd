@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 interface Rol {
   rol_id: number;
@@ -99,6 +99,7 @@ const props = withDefaults(defineProps<Props>(), {
   isEditMode: false,
 });
 
+const STORAGE_KEY = 'usuarioFormData';
 const formData = ref<UsuarioFormData>({
   nombre: props.initialData.nombre,
   apellido: props.initialData.apellido,
@@ -111,6 +112,23 @@ const formData = ref<UsuarioFormData>({
 const emit = defineEmits<{
   submit: [formData: UsuarioFormData]
 }>();
+
+// Cargar datos del localStorage al montar el componente
+onMounted(() => {
+  const savedData = localStorage.getItem(STORAGE_KEY);
+  if (savedData) {
+    try {
+      formData.value = JSON.parse(savedData);
+    } catch (e) {
+      console.error('Error al cargar datos del localStorage:', e);
+    }
+  }
+});
+
+// Guardar en localStorage cuando cambian los datos
+watch(() => formData.value, (newData) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+}, { deep: true });
 
 watch(() => props.initialData, (newVal) => {
   if (newVal) {
@@ -125,7 +143,13 @@ watch(() => props.initialData, (newVal) => {
   }
 }, { deep: true, immediate: true });
 
+const submit = () => {
+  emit('submit', formData.value);
+  // Limpiar localStorage después de guardar
+  localStorage.removeItem(STORAGE_KEY);
+};
+
 defineExpose({
-  submit: () => emit('submit', formData.value)
+  submit
 });
 </script>
