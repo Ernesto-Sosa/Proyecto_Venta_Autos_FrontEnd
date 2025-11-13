@@ -1,77 +1,43 @@
 <template>
   <div class="overflow-x-auto">
-    <div v-if="loading" class="text-center py-4">
-      <div class="inline-block animate-spin">
-        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-      </div>
-    </div>
-    
-    <div v-else-if="error" class="p-4 bg-red-100 border border-red-400 text-red-700 rounded mb-6">
-      {{ error }}
-    </div>
-    
-    <table v-else class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Nombre
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Email
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Teléfono
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Rol
-          </th>
-          <th scope="col" class="relative px-6 py-3">
-            <span class="sr-only">Acciones</span>
-          </th>
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-[#12161e] text-white">
+          <th class="px-6 py-3 text-left font-semibold">Nombre</th>
+          <th class="px-6 py-3 text-left font-semibold">Email</th>
+          <th class="px-6 py-3 text-left font-semibold">Teléfono</th>
+          <th class="px-6 py-3 text-left font-semibold">Rol</th>
+          <th class="px-6 py-3 text-center font-semibold">Acciones</th>
         </tr>
       </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="usuario in usuarios" :key="usuario.usuario_id" class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex items-center">
-              <div class="ml-4">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ usuario.nombre }} {{ usuario.apellido }}
-                </div>
-              </div>
-            </div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-900">{{ usuario.email }}</div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-900">{{ usuario.telefono }}</div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-              {{ getRolNombre(usuario.rol_id) }}
-            </span>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <button
-              @click="$emit('edit', usuario)"
-              class="text-indigo-600 hover:text-indigo-900 mr-4"
-            >
-              Editar
-            </button>
-            <button
-              @click="$emit('delete', usuario.usuario_id)"
-              class="text-red-600 hover:text-red-900"
-            >
-              Eliminar
-            </button>
+      <tbody>
+        <tr v-if="usuarios.length === 0" class="border-b border-[#a19b9c]">
+          <td colspan="5" class="px-6 py-8 text-center text-[#a19b9c]">
+            No hay usuarios registrados
           </td>
         </tr>
-        <tr v-if="usuarios.length === 0">
-          <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-            No hay usuarios registrados
+        <tr v-for="usuario in usuarios" :key="usuario.usuario_id" class="border-b border-[#a19b9c] hover:bg-gray-50 transition-colors">
+          <td class="px-6 py-4 text-[#12161e] font-semibold">
+            {{ usuario.nombre }} {{ usuario.apellido }}
+          </td>
+          <td class="px-6 py-4 text-[#12161e]">{{ usuario.email }}</td>
+          <td class="px-6 py-4 text-[#12161e]">{{ usuario.telefono }}</td>
+          <td class="px-6 py-4 text-[#a19b9c]">{{ getRolNombre(usuario.rol_id) }}</td>
+          <td class="px-6 py-4 text-center">
+            <div class="flex gap-2 justify-center">
+              <button
+                @click="$emit('edit', usuario)"
+                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm font-semibold"
+              >
+                Editar
+              </button>
+              <button
+                @click="$emit('delete', usuario.usuario_id)"
+                class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm font-semibold"
+              >
+                Eliminar
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
