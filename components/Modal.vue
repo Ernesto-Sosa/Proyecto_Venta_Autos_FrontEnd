@@ -1,6 +1,6 @@
 <template>
   <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between p-6 border-b border-[#a19b9c]">
         <h2 class="text-xl font-bold text-[#12161e]">{{ title }}</h2>
         <button @click="close" class="text-[#a19b9c] hover:text-[#12161e] transition-colors">
@@ -9,7 +9,7 @@
           </svg>
         </button>
       </div>
-      <div class="p-6">
+      <div class="p-6 overflow-y-auto flex-1 min-h-0">
         <slot />
       </div>
       <div class="flex gap-3 p-6 border-t border-[#a19b9c] justify-end">
