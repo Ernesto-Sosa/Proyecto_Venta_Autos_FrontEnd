@@ -24,13 +24,7 @@
           <label class="block text-sm font-medium text-[#12161e] mb-1">Contraseña</label>
           <input v-model="form.contraseña" type="password" required class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" />
         </div>
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-[#12161e] mb-1">Rol</label>
-          <select v-model.number="form.rol_id" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]">
-            <option :value="1">Usuario</option>
-            <option :value="2">Administrador</option>
-          </select>
-        </div>
+        
 
         <div v-if="error" class="md:col-span-2 p-3 bg-red-100 text-red-700 rounded text-sm">{{ error }}</div>
         <div v-if="ok" class="md:col-span-2 p-3 bg-green-100 text-green-700 rounded text-sm">{{ ok }}</div>
@@ -51,7 +45,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
+interface Rol { rol_id: number; nombre_rol: string; descripcion: string }
+const { data: rolesData } = useFetch<Rol[]>('http://localhost:3000/api/roles', { server: false })
+const clienteRoleId = computed(() => {
+  const list = rolesData.value || []
+  const found = list.find(r => r.nombre_rol === 'Cliente')
+  return found ? found.rol_id : 1
+})
 
 interface RegisterForm {
   nombre: string
@@ -72,6 +73,7 @@ const onSubmit = async () => {
   ok.value = null
   loading.value = true
   try {
+    form.rol_id = clienteRoleId.value
     await $fetch('http://localhost:3000/api/usuarios', { method: 'POST', body: form })
     ok.value = 'Cuenta creada. Ahora puedes iniciar sesión.'
     setTimeout(() => navigateTo('/login'), 1000)

@@ -4,7 +4,7 @@
     <header class="bg-white shadow-sm sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         <!-- Left: Login Button -->
-        <button class="px-6 py-2 font-semibold border-2 border-[#12161e] text-[#12161e] rounded hover:bg-[#12161e] hover:text-white transition-all duration-300 hover:shadow-lg active:scale-95">
+        <button @click="navigateTo('/login')" class="px-6 py-2 font-semibold border-2 border-[#12161e] text-[#12161e] rounded hover:bg-[#12161e] hover:text-white transition-all duration-300 hover:shadow-lg active:scale-95">
           Iniciar Sesión
         </button>
 

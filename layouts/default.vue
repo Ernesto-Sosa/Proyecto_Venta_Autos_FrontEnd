@@ -28,7 +28,7 @@
           </div>
 
           <!-- Perfil y Cerrar Sesión -->
-          <div class="hidden sm:ml-6 sm:flex sm:items-center">
+          <div class="hidden sm:ml-6 sm:flex sm:items-center" v-if="isAuthenticated">
             <div class="relative ml-3">
               <div class="flex items-center">
                 <NuxtLink 
@@ -87,7 +87,7 @@
           >
             {{ item.name }}
           </NuxtLink>
-          <div class="pt-4 pb-3 border-t border-gray-200">
+          <div class="pt-4 pb-3 border-t border-gray-200" v-if="isAuthenticated">
             <div class="mt-3 space-y-1">
               <NuxtLink
                 to="/perfil"
@@ -120,28 +120,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useCookie, useState, navigateTo } from '#imports'
 
 const route = useRoute();
 const isMobileMenuOpen = ref(false);
 
-const navigation = [
-  { name: 'Inicio', href: '/' },
-  { name: 'Roles', href: '/roles' },
-  { name: 'Usuarios', href: '/usuarios' },
-  { name: 'Vehículos', href: '/vehiculos' },
-  { name: 'Citas', href: '/citas' },
-  { name: 'Ventas', href: '/ventas' },
-];
+const token = useCookie<string | null>('auth_token')
+const user = useState<any>('auth_user', () => null)
+const isAuthenticated = computed(() => !!token.value)
+
+const navigation = computed(() => {
+  const items: Array<{ name: string; href: string }> = []
+  if (!isAuthenticated.value) {
+    items.push({ name: 'Inicio', href: '/' })
+  } else if (user.value?.nombre_rol === 'Administrador') {
+    items.push(
+      { name: 'Inicio', href: '/' },
+      { name: 'Roles', href: '/roles' },
+      { name: 'Usuarios', href: '/usuarios' },
+      { name: 'Vehículos', href: '/vehiculos' },
+      { name: 'Citas', href: '/citas' },
+      { name: 'Ventas', href: '/ventas' },
+    )
+  } else if (user.value?.nombre_rol === 'Cliente') {
+    // Solo Vehículos para clientes autenticados
+    items.push({ name: 'Vehículos', href: '/vehiculos' })
+  }
+  return items
+})
 
 const isActive = (path: string) => {
   return route.path === path || (path !== '/' && route.path.startsWith(path));
 };
 
 const logout = () => {
-  // Aquí iría la lógica para cerrar sesión
-  console.log('Cerrar sesión');
-  // Por ejemplo: navigateTo('/login');
-};
+  token.value = null
+  user.value = null
+  navigateTo('/login')
+}
 </script>

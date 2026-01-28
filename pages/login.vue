@@ -31,6 +31,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useCookie, useState } from '#imports'
+definePageMeta({ layout: false })
 
 const email = ref('')
 const password = ref('')
