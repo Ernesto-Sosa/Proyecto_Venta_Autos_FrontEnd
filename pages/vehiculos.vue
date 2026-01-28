@@ -35,7 +35,7 @@
       <!-- Table -->
       <div v-else class="bg-white rounded-lg shadow-md overflow-hidden">
         <VehiculoTable
-          :vehiculos="vehiculos"
+          :vehiculos="vehiculosFiltrados"
           @edit="openEditModal"
           @delete="confirmDelete"
         />
@@ -86,6 +86,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useRoute } from '#imports'
 import Modal from '~/components/Modal.vue'
 import VehiculoForm from '~/components/VehiculoForm.vue'
 import VehiculoTable from '~/components/VehiculoTable.vue'
@@ -131,6 +132,8 @@ interface VehiculoFormData {
 
 definePageMeta({
   layout: 'default',
+  auth: true,
+  middleware: 'auth' as any,
 })
 
 // Estado
@@ -182,6 +185,18 @@ watch(usuariosData, (val) => {
 }, { immediate: true })
 
 const isLoading = computed(() => pendingVehiculos.value || pendingUsuarios.value || loading.value)
+
+// Búsqueda por query param `q`
+const route = useRoute()
+const q = computed(() => (typeof route.query.q === 'string' ? route.query.q : '').toLowerCase())
+const vehiculosFiltrados = computed(() => {
+  const term = q.value
+  if (!term) return vehiculos.value
+  return vehiculos.value.filter(v => {
+    const texto = `${v.marca} ${v.modelo} ${v.color} ${v.tipo_combustible} ${v.descripcion} ${v.estado}`.toLowerCase()
+    return texto.includes(term)
+  })
+})
 
 // POST
 const createVehiculo = async (datos: VehiculoFormData) => {

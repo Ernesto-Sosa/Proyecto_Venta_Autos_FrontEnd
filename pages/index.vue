@@ -45,41 +45,48 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <!-- Upper Section: About Us Carousel -->
-      <section class="flex-1 bg-gradient-to-b from-white to-gray-50 flex items-center justify-center border-b border-[#a19b9c] hover:shadow-inner transition-shadow duration-300">
-        <div class="text-center px-8">
-          <div class="mb-6">
-            <div class="inline-block p-4 bg-[#12161e] rounded-full mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      <!-- Hero -->
+      <section class="relative h-[70vh] md:h-[80vh]">
+        <div class="absolute inset-0">
+          <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop" alt="Carros en carretera" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-black/50"></div>
+        </div>
+        <div class="relative z-10 h-full max-w-5xl mx-auto px-6 flex flex-col items-center justify-center text-center">
+          <h1 class="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-3">AutoSales</h1>
+          <p class="text-white/90 text-xl md:text-2xl mb-6">Encuentra tu auto perfecto</p>
+          <div class="w-full max-w-2xl flex items-center bg-white rounded-full shadow-lg overflow-hidden">
+            <div class="px-4 text-[#a19b9c]">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
               </svg>
             </div>
+            <input v-model="searchQuery" @keyup.enter="doSearch" type="text" placeholder="Buscar por marca, modelo, tipo de carrocería" class="flex-1 px-2 py-3 outline-none text-[#12161e]" />
+            <button @click="doSearch" class="px-5 py-3 bg-[#12161e] text-white font-semibold hover:bg-opacity-90">Buscar</button>
           </div>
-          <h2 class="text-4xl font-bold text-[#12161e] mb-3">Sobre Nosotros</h2>
-          <p class="text-[#a19b9c] text-lg max-w-2xl mx-auto leading-relaxed">Descubre la historia y valores de AutoSales. Aquí irá el carrusel con información sobre nuestra empresa.</p>
+          <div class="mt-6 flex flex-wrap gap-3 justify-center">
+            <button @click="doSearch" class="px-4 py-2 rounded-md border border-white/40 text-white/90 hover:bg-white/10">Marca / Modelo</button>
+            <button @click="doSearch" class="px-4 py-2 rounded-md border border-white/40 text-white/90 hover:bg-white/10">Estilo de Carrocería</button>
+            <button @click="doSearch" class="px-4 py-2 rounded-md border border-white/40 text-white/90 hover:bg-white/10">Precio</button>
+          </div>
         </div>
       </section>
-
-      <!-- Lower Section: Available Cars Carousel -->
-      <section class="flex-1 bg-white flex items-center justify-center hover:shadow-inner transition-shadow duration-300">
-        <div class="text-center px-8">
-          <div class="mb-6">
-            <div class="inline-block p-4 bg-[#12161e] rounded-full mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8m0 8l-6-2m6 2l6-2M5 13l6-2m6 2l6-2M5 5l6-2m6 2l6-2"/>
-              </svg>
-            </div>
-          </div>
-          <h2 class="text-4xl font-bold text-[#12161e] mb-3">Autos Disponibles</h2>
-          <p class="text-[#a19b9c] text-lg max-w-2xl mx-auto leading-relaxed">Explora nuestro catálogo de vehículos. Aquí irá el carrusel con los autos disponibles con sus fotos.</p>
-        </div>
-      </section>
+ 
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import { navigateTo } from '#imports'
+
 definePageMeta({
   layout: false,
 })
+
+const searchQuery = ref('')
+const doSearch = () => {
+  const q = searchQuery.value.trim()
+  if (q) return navigateTo({ path: '/vehiculos', query: { q } })
+  return navigateTo('/vehiculos')
+}
 </script>

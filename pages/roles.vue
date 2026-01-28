@@ -19,7 +19,7 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="text-center py-12">
+      <div v-if="isLoading" class="text-center py-12">
         <div class="inline-block animate-spin">
           <svg class="w-8 h-8 text-[#12161e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import Modal from '~/components/Modal.vue'
 import RolForm from '~/components/RolForm.vue'
 import RolTable from '~/components/RolTable.vue'
@@ -90,6 +90,8 @@ interface Rol {
 
 definePageMeta({
   layout: 'default',
+  auth: true,
+  middleware: 'auth' as any,
 })
 
 // Estados reactivos
@@ -103,19 +105,19 @@ const formRef = ref<{ submit: () => void } | null>(null)
 const showDeleteConfirm = ref(false)
 const rolToDelete = ref<number | null>(null)
 
-// Funciones de la API
-const fetchRoles = async () => {
-  loading.value = true
-  error.value = null
-  try {
-    const data = await $fetch<Rol[]>(API_URL)
-    roles.value = Array.isArray(data) ? data : []
-  } catch (err) {
-    error.value = (err as Error).message
-  } finally {
-    loading.value = false
+// GET con useFetch
+const { data: rolesData, pending: pendingRoles } = useFetch<Rol[]>(API_URL, {
+  server: false,
+  onResponseError: (ctx) => {
+    error.value = ctx.error?.message || 'Error al cargar los roles'
   }
-}
+})
+
+watch(rolesData, (val) => {
+  if (Array.isArray(val)) roles.value = val
+}, { immediate: true })
+
+const isLoading = computed(() => pendingRoles.value || loading.value)
 
 const createRol = async (datos: Omit<Rol, 'rol_id'>) => {
   loading.value = true
@@ -176,10 +178,8 @@ const deleteRol = async (id: number) => {
   }
 }
 
-// Inicializar datos
-onMounted(() => {
-  fetchRoles()
-})
+// Inicializar datos: useFetch ya carga automáticamente en cliente
+onMounted(() => {})
 
 const openCreateModal = () => {
   isEditMode.value = false

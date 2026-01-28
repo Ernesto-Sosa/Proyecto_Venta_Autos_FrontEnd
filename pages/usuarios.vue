@@ -121,6 +121,8 @@ interface UsuarioFormData {
 
 definePageMeta({
   layout: 'default',
+  auth: true,
+  middleware: 'auth' as any,
 });
 
 // Estados reactivos

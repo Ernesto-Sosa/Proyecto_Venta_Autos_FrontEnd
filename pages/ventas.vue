@@ -18,6 +18,30 @@
         </button>
       </div>
 
+      <!-- Filtros -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-[#12161e] mb-2">Estado</label>
+            <select v-model="filtroEstado" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]">
+              <option value="Todos">Todos</option>
+              <option v-for="e in estadosVenta" :key="e" :value="e">{{ e }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-[#12161e] mb-2">Desde</label>
+            <input v-model="filtroDesde" type="date" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-[#12161e] mb-2">Hasta</label>
+            <input v-model="filtroHasta" type="date" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" />
+          </div>
+          <div class="flex items-end">
+            <button @click="limpiarFiltros" class="w-full px-4 py-2 border-2 border-[#a19b9c] text-[#12161e] rounded hover:bg-[#a19b9c] hover:text-white transition-colors">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-12">
         <div class="inline-block animate-spin">
@@ -34,7 +58,7 @@
 
       <!-- Table -->
       <div v-else class="bg-white rounded-lg shadow-md overflow-hidden">
-        <VentaTable :ventas="ventas" :usuarios="usuarios" :vehiculos="vehiculos" @edit="openEditModal" @delete="confirmDelete" />
+        <VentaTable :ventas="ventasFiltradas" :usuarios="usuarios" :vehiculos="vehiculos" @edit="openEditModal" @delete="confirmDelete" />
       </div>
     </div>
 
@@ -111,7 +135,11 @@ interface VentaFormData {
   estado_venta: string
 }
 
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  layout: 'default',
+  auth: true,
+  middleware: 'auth' as any,
+})
 
 // Estado
 const ventas = ref<Venta[]>([])
@@ -119,6 +147,12 @@ const usuarios = ref<Usuario[]>([])
 const vehiculos = ref<Vehiculo[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+// Filtros
+const estadosVenta: string[] = ['Pendiente', 'Procesando', 'Completada', 'Cancelada']
+const filtroEstado = ref<string>('Todos')
+const filtroDesde = ref<string>('')
+const filtroHasta = ref<string>('')
 const isModalOpen = ref(false)
 const isEditMode = ref(false)
 const formRef = ref<{ submit: () => void } | null>(null)
@@ -154,6 +188,20 @@ const { data: vehiculosData, pending: pendingVehiculos } = useFetch<Vehiculo[]>(
 watch(vehiculosData, (val) => { if (Array.isArray(val)) vehiculos.value = val }, { immediate: true })
 
 const isLoading = computed(() => pendingVentas.value || pendingUsuarios.value || pendingVehiculos.value || loading.value)
+
+// Computed: ventas filtradas
+const ventasFiltradas = computed(() => {
+  const desde = filtroDesde.value
+  const hasta = filtroHasta.value
+  return ventas.value.filter(v => {
+    const estadoOk = filtroEstado.value === 'Todos' || v.estado_venta === filtroEstado.value
+    let dateStr = ''
+    try { dateStr = new Date(v.fecha).toISOString().slice(0, 10) } catch { dateStr = '' }
+    const desdeOk = !desde || dateStr >= desde
+    const hastaOk = !hasta || dateStr <= hasta
+    return estadoOk && desdeOk && hastaOk
+  })
+})
 
 // POST
 const createVenta = async (datos: VentaFormData) => {
@@ -201,6 +249,11 @@ const deleteVenta = async (id: number) => {
 }
 
 // UI handlers
+const limpiarFiltros = () => {
+  filtroEstado.value = 'Todos'
+  filtroDesde.value = ''
+  filtroHasta.value = ''
+}
 const openCreateModal = () => {
   isEditMode.value = false
   editingId.value = null
