@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-white flex flex-col">
     <!-- Dashboard Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-6 py-3 md:py-4 flex items-center justify-between">
         <!-- Left: Login Button -->
         <button @click="navigateTo('/login')" class="px-6 py-2 font-semibold border-2 border-[#12161e] text-[#12161e] rounded hover:bg-[#12161e] hover:text-white transition-all duration-300 hover:shadow-lg active:scale-95">
           Iniciar Sesión
@@ -46,7 +46,7 @@
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col overflow-hidden">
       <!-- Hero -->
-      <section class="relative h-[70vh] md:h-[80vh]">
+      <section class="relative h-[78vh] md:h-[88vh]">
         <div class="absolute inset-0">
           <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop" alt="Carros en carretera" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-black/50"></div>
@@ -60,14 +60,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
               </svg>
             </div>
-            <input v-model="searchQuery" @keyup.enter="doSearch" type="text" placeholder="Buscar por marca, modelo, tipo de carrocería" class="flex-1 px-2 py-3 outline-none text-[#12161e]" />
+            <input v-model="searchQuery" @keyup.enter="doSearch" type="text" placeholder="Buscar por marca, modelo, color" class="flex-1 px-2 py-3 outline-none text-[#12161e]" />
             <button @click="doSearch" class="px-5 py-3 bg-[#12161e] text-white font-semibold hover:bg-opacity-90">Buscar</button>
           </div>
-          <div class="mt-6 flex flex-wrap gap-3 justify-center">
-            <button @click="doSearch" class="px-4 py-2 rounded-md border border-white/40 text-white/90 hover:bg-white/10">Marca / Modelo</button>
-            <button @click="doSearch" class="px-4 py-2 rounded-md border border-white/40 text-white/90 hover:bg-white/10">Estilo de Carrocería</button>
-            <button @click="doSearch" class="px-4 py-2 rounded-md border border-white/40 text-white/90 hover:bg-white/10">Precio</button>
-          </div>
+          <!-- filtros rápidos eliminados -->
         </div>
       </section>
  

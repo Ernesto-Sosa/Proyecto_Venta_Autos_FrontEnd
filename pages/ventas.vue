@@ -139,7 +139,7 @@ definePageMeta({
   layout: 'default',
   auth: true,
   middleware: 'auth' as any,
-  roles: ['Administrador'],
+  roles: ['Administrador', 'Vendedor'],
 })
 
 // Estado

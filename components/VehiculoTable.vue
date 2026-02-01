@@ -3,6 +3,7 @@
     <table class="w-full border-collapse">
       <thead>
         <tr class="bg-[#12161e] text-white">
+          <th class="px-6 py-3 text-left font-semibold">Foto</th>
           <th class="px-6 py-3 text-left font-semibold">Marca</th>
           <th class="px-6 py-3 text-left font-semibold">Modelo</th>
           <th class="px-6 py-3 text-left font-semibold">Precio</th>
@@ -13,11 +14,20 @@
       </thead>
       <tbody>
         <tr v-if="vehiculos.length === 0" class="border-b border-[#a19b9c]">
-          <td colspan="6" class="px-6 py-8 text-center text-[#a19b9c]">
+          <td colspan="7" class="px-6 py-8 text-center text-[#a19b9c]">
             No hay vehículos registrados
           </td>
         </tr>
         <tr v-for="v in vehiculos" :key="v.vehiculo_id" class="border-b border-[#a19b9c] hover:bg-gray-50 transition-colors">
+          <td class="px-6 py-3">
+            <img
+              v-if="v.foto_url"
+              :src="imageUrl(v.foto_url)"
+              alt="Foto del vehículo"
+              class="w-20 h-14 object-cover rounded border"
+            />
+            <div v-else class="w-20 h-14 bg-gray-200 rounded border flex items-center justify-center text-xs text-gray-500">Sin foto</div>
+          </td>
           <td class="px-6 py-4 text-[#12161e] font-semibold">{{ v.marca }}</td>
           <td class="px-6 py-4 text-[#12161e]">{{ v.modelo }}</td>
           <td class="px-6 py-4 text-[#12161e]">${{ formatPrecio(v.precio) }}</td>
@@ -48,6 +58,7 @@ interface Vehiculo {
   descripcion: string
   estado: string
   usuario_id: number
+  foto_url?: string | null
 }
 
 interface Props {
@@ -62,4 +73,8 @@ defineEmits<{
 }>()
 
 const formatPrecio = (valor: number) => new Intl.NumberFormat('es-PE', { style: 'decimal' }).format(valor)
+const imageUrl = (path?: string | null) => {
+  if (!path) return ''
+  return path.startsWith('http') ? path : `http://localhost:3000${path}`
+}
 </script>

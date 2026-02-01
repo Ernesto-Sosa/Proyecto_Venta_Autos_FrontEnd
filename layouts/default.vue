@@ -31,6 +31,7 @@
           <div class="hidden sm:ml-6 sm:flex sm:items-center" v-if="isAuthenticated">
             <div class="relative ml-3">
               <div class="flex items-center">
+                <img :src="user?.avatar_url || '/images/avatars/car-1.svg'" alt="Avatar" class="w-8 h-8 rounded-full ring-2 ring-white mr-2" />
                 <NuxtLink 
                   to="/perfil" 
                   class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium"
@@ -94,7 +95,10 @@
                 class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                 @click="isMobileMenuOpen = false"
               >
-                Mi Perfil
+                <span class="inline-flex items-center gap-2">
+                  <img :src="user?.avatar_url || '/images/avatars/car-1.svg'" alt="Avatar" class="w-6 h-6 rounded-full ring-2 ring-white" />
+                  Mi Perfil
+                </span>
               </NuxtLink>
               <button
                 @click="logout"
@@ -120,9 +124,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useCookie, useState, navigateTo } from '#imports'
+import { useCookie, useState, navigateTo, useFetch } from '#imports'
 
 const route = useRoute();
 const isMobileMenuOpen = ref(false);
@@ -131,11 +135,19 @@ const token = useCookie<string | null>('auth_token')
 const user = useState<any>('auth_user', () => null)
 const isAuthenticated = computed(() => !!token.value)
 
+onMounted(async () => {
+  if (isAuthenticated.value && !user.value) {
+    const { data, error } = await useFetch<any>('http://localhost:3000/api/auth/me', { server: false, headers: token.value ? { Authorization: `Bearer ${token.value}` } : {} })
+    if (!error.value && data.value) user.value = data.value
+  }
+})
+
 const navigation = computed(() => {
   const items: Array<{ name: string; href: string }> = []
+  const role = String(user.value?.nombre_rol || '').toLowerCase().trim()
   if (!isAuthenticated.value) {
     items.push({ name: 'Inicio', href: '/' })
-  } else if (user.value?.nombre_rol === 'Administrador') {
+  } else if (role === 'administrador') {
     items.push(
       { name: 'Inicio', href: '/' },
       { name: 'Roles', href: '/roles' },
@@ -144,9 +156,17 @@ const navigation = computed(() => {
       { name: 'Citas', href: '/citas' },
       { name: 'Ventas', href: '/ventas' },
     )
-  } else if (user.value?.nombre_rol === 'Cliente') {
-    // Solo Vehículos para clientes autenticados
+  } else if (role === 'vendedor') {
+    // Vendedor puede ver Vehículos, Citas y Ventas
+    items.push(
+      { name: 'Vehículos', href: '/vehiculos' },
+      { name: 'Citas', href: '/citas' },
+      { name: 'Ventas', href: '/ventas' },
+    )
+  } else if (role === 'cliente') {
+    // Navegación para clientes autenticados
     items.push({ name: 'Vehículos', href: '/vehiculos' })
+    items.push({ name: 'Mis Citas', href: '/mis-citas' })
   }
   return items
 })
@@ -158,6 +178,6 @@ const isActive = (path: string) => {
 const logout = () => {
   token.value = null
   user.value = null
-  navigateTo('/login')
+  navigateTo('/')
 }
 </script>

@@ -25,6 +25,22 @@
           <input v-model="form.contraseña" type="password" required class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" />
         </div>
         
+        <!-- Avatares -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#12161e] mb-2">Elige un avatar</label>
+          <div class="grid grid-cols-3 gap-3">
+            <button
+              v-for="(url, idx) in avatars"
+              :key="idx"
+              type="button"
+              @click="form.avatar_url = url"
+              class="relative aspect-square overflow-hidden rounded-lg border-2 hover:border-[#12161e]"
+              :class="{ 'ring-2 ring-[#12161e]': form.avatar_url === url }"
+            >
+              <img :src="url" alt="Avatar" class="w-full h-full object-cover" />
+            </button>
+          </div>
+        </div>
 
         <div v-if="error" class="md:col-span-2 p-3 bg-red-100 text-red-700 rounded text-sm">{{ error }}</div>
         <div v-if="ok" class="md:col-span-2 p-3 bg-green-100 text-green-700 rounded text-sm">{{ ok }}</div>
@@ -46,6 +62,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, computed } from 'vue'
+import { useFetch, navigateTo } from '#imports'
 interface Rol { rol_id: number; nombre_rol: string; descripcion: string }
 const { data: rolesData } = useFetch<Rol[]>('http://localhost:3000/api/roles', { server: false })
 const clienteRoleId = computed(() => {
@@ -61,12 +78,23 @@ interface RegisterForm {
   contraseña: string
   telefono: string
   rol_id: number
+  avatar_url?: string
 }
 
-const form = reactive<RegisterForm>({ nombre: '', apellido: '', email: '', contraseña: '', telefono: '', rol_id: 1 })
+const form = reactive<RegisterForm>({ nombre: '', apellido: '', email: '', contraseña: '', telefono: '', rol_id: 1, avatar_url: '' })
 const loading = ref(false)
 const error = ref<string | null>(null)
 const ok = ref<string | null>(null)
+
+// Avatares disponibles (locales)
+const avatars = [
+  '/images/avatars/car-1.svg',
+  '/images/avatars/car-2.svg',
+  '/images/avatars/car-3.svg',
+  '/images/avatars/car-4.svg',
+  '/images/avatars/car-5.svg',
+  '/images/avatars/car-6.svg',
+]
 
 const onSubmit = async () => {
   error.value = null

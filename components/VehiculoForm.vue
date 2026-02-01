@@ -38,6 +38,10 @@
         <textarea v-model="formData.descripcion" rows="4" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e] resize-none" required />
       </div>
       <div class="md:col-span-2">
+        <label class="block text-sm font-semibold text-[#12161e] mb-2">Foto</label>
+        <input type="file" accept="image/*" @change="onFileChange" class="w-full" />
+      </div>
+      <div class="md:col-span-2">
         <label class="block text-sm font-semibold text-[#12161e] mb-2">Usuario</label>
         <select v-model.number="formData.usuario_id" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" required>
           <option v-for="u in usuarios" :key="u.usuario_id" :value="u.usuario_id">
@@ -101,7 +105,7 @@ const formData = ref<VehiculoFormData>({
 })
 
 const emit = defineEmits<{
-  submit: [formData: VehiculoFormData]
+  submit: [formData: VehiculoFormData, foto: File | null]
 }>()
 
 onMounted(() => {
@@ -133,6 +137,11 @@ watch(() => props.initialData, (newVal) => {
 }, { deep: true, immediate: true })
 
 const error = ref('')
+const fotoFile = ref<File | null>(null)
+const onFileChange = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  fotoFile.value = input.files && input.files[0] ? input.files[0] : null
+}
 const submit = () => {
   // Validaciones mínimas
   if (!formData.value.marca.trim() || !formData.value.modelo.trim()) {
@@ -140,7 +149,7 @@ const submit = () => {
     return
   }
   error.value = ''
-  emit('submit', formData.value)
+  emit('submit', formData.value, fotoFile.value)
   localStorage.removeItem(STORAGE_KEY)
 }
 

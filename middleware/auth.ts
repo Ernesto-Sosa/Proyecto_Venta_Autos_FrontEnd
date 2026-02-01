@@ -29,7 +29,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const requiredRoles = ((to.meta as any)?.roles as string[]) || []
   if (requiredRoles.length && user.value) {
-    const hasRole = requiredRoles.includes(user.value.nombre_rol || '') || requiredRoles.includes(String(user.value.rol_id))
+    const req = requiredRoles.map(r => String(r).toLowerCase().trim())
+    const roleName = String(user.value.nombre_rol || '').toLowerCase().trim()
+    const roleId = String(user.value.rol_id ?? '')
+    const hasRole = req.includes(roleName) || req.includes(roleId)
     if (!hasRole) return navigateTo('/')
   }
 })

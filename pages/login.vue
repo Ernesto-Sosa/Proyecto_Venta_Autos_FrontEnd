@@ -50,7 +50,7 @@ const onSubmit = async () => {
     })
     token.value = resp.token
     user.value = resp.usuario
-    await navigateTo('/')
+    await navigateTo('/vehiculos')
   } catch (e: any) {
     error.value = e?.data?.message || e?.message || 'Error al iniciar sesión'
   } finally {
