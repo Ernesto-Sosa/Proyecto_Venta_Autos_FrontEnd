@@ -51,6 +51,16 @@
             </button>
           </div>
         </div>
+        <div class="pt-2 border-t border-gray-100">
+          <h2 class="text-sm font-semibold text-[#a19b9c] mb-2">Seguridad</h2>
+          <div class="flex items-center justify-between">
+            <p class="text-[#12161e]">2FA: <span :class="me?.twofa_enabled ? 'text-green-600' : 'text-gray-500'">{{ me?.twofa_enabled ? 'Activado' : 'Desactivado' }}</span></p>
+            <div class="flex gap-2">
+              <button v-if="!me?.twofa_enabled" @click="open2FAModal" class="px-3 py-2 border-2 border-[#12161e] text-[#12161e] rounded hover:bg-[#12161e] hover:text-white text-sm">Configurar 2FA</button>
+              <button v-else @click="openDisable2FA" class="px-3 py-2 border-2 border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white text-sm">Desactivar 2FA</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -110,12 +120,45 @@
       <div v-if="avatarError" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded">{{ avatarError }}</div>
     </div>
   </Modal>
+  <Modal
+    :is-open="twofaOpen"
+    title="Configurar 2FA"
+    :is-loading="twofaLoading"
+    @close="close2FAModal"
+    @confirm="confirmEnable2FA"
+  >
+    <div class="space-y-4">
+      <div v-if="twofaQR">
+        <p class="text-sm text-[#12161e] mb-2">Escanea este código QR con Google Authenticator u otra app TOTP.</p>
+        <img :src="twofaQR" alt="QR 2FA" class="w-40 h-40" />
+        <p class="text-xs text-[#a19b9c] mt-2">Clave secreta: <span class="font-mono">{{ twofaSecret }}</span></p>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-[#12161e] mb-2">Código de 6 dígitos</label>
+        <input v-model="twofaCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" />
+      </div>
+      <div v-if="twofaError" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded">{{ twofaError }}</div>
+    </div>
+  </Modal>
+  <Modal
+    :is-open="twofaDisableOpen"
+    title="Desactivar 2FA"
+    :is-loading="twofaDisableLoading"
+    @close="closeDisable2FA"
+    @confirm="confirmDisable2FA"
+  >
+    <div class="space-y-4">
+      <p class="text-sm text-[#12161e]">Ingresa un código 2FA para confirmar.</p>
+      <input v-model="twofaDisableCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" />
+      <div v-if="twofaDisableError" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded">{{ twofaDisableError }}</div>
+    </div>
+  </Modal>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import Modal from '~/components/Modal.vue'
-import { useState, useFetch, navigateTo } from '#imports'
+import { useState, useFetch, navigateTo, useCookie } from '#imports'
 
 definePageMeta({
   layout: 'default',
@@ -125,7 +168,8 @@ definePageMeta({
 })
 
 const user = useState<any>('auth_user', () => null)
-const { data, error, pending } = useFetch<any>('http://localhost:3000/api/auth/me', { server: false })
+const token = useCookie<string | null>('auth_token')
+const { data, error, pending } = useFetch<any>('http://localhost:3000/api/auth/me', { server: false, headers: token.value ? { Authorization: `Bearer ${token.value}` } : {} })
 if (data.value) user.value = data.value
 
 const me = user
@@ -146,6 +190,74 @@ const openPwdModal = () => {
   confirmPassword.value = ''
   pwdError.value = null
   pwdOpen.value = true
+}
+
+// 2FA
+const twofaOpen = ref(false)
+const twofaLoading = ref(false)
+const twofaError = ref<string | null>(null)
+const twofaQR = ref('')
+const twofaSecret = ref('')
+const twofaCode = ref('')
+const { data: setupData, error: setupError, pending: setupPending, refresh: setupRefresh } = useFetch<any>('http://localhost:3000/api/auth/2fa/setup', { server: false, immediate: false, headers: token.value ? { Authorization: `Bearer ${token.value}` } : {} })
+const open2FAModal = async () => {
+  twofaError.value = null
+  twofaCode.value = ''
+  await setupRefresh()
+  if (setupError.value) {
+    twofaError.value = (setupError.value as any)?.message || 'No se pudo iniciar la configuración'
+    return
+  }
+  twofaQR.value = setupData.value?.qr || ''
+  twofaSecret.value = setupData.value?.secret || ''
+  twofaOpen.value = true
+}
+const close2FAModal = () => { twofaOpen.value = false }
+const confirmEnable2FA = async () => {
+  if (!twofaSecret.value || !twofaCode.value) {
+    twofaError.value = 'Ingresa el código de 6 dígitos'
+    return
+  }
+  try {
+    twofaLoading.value = true
+    twofaError.value = null
+    const resp: any = await $fetch('http://localhost:3000/api/auth/2fa/enable', {
+      method: 'POST',
+      headers: token.value ? { Authorization: `Bearer ${token.value}` } : {},
+      body: { secret: twofaSecret.value, code: twofaCode.value }
+    })
+    if (resp?.usuario) user.value = { ...user.value, ...resp.usuario }
+    twofaOpen.value = false
+  } catch (e: any) {
+    twofaError.value = e?.data?.message || e?.message || 'No se pudo activar 2FA'
+  } finally {
+    twofaLoading.value = false
+  }
+}
+
+const twofaDisableOpen = ref(false)
+const twofaDisableLoading = ref(false)
+const twofaDisableError = ref<string | null>(null)
+const twofaDisableCode = ref('')
+const openDisable2FA = () => { twofaDisableError.value = null; twofaDisableCode.value = ''; twofaDisableOpen.value = true }
+const closeDisable2FA = () => { twofaDisableOpen.value = false }
+const confirmDisable2FA = async () => {
+  if (!twofaDisableCode.value) { twofaDisableError.value = 'Código requerido'; return }
+  try {
+    twofaDisableLoading.value = true
+    twofaDisableError.value = null
+    const resp: any = await $fetch('http://localhost:3000/api/auth/2fa/disable', {
+      method: 'POST',
+      headers: token.value ? { Authorization: `Bearer ${token.value}` } : {},
+      body: { code: twofaDisableCode.value }
+    })
+    if (resp?.usuario) user.value = { ...user.value, ...resp.usuario }
+    twofaDisableOpen.value = false
+  } catch (e: any) {
+    twofaDisableError.value = e?.data?.message || e?.message || 'No se pudo desactivar 2FA'
+  } finally {
+    twofaDisableLoading.value = false
+  }
 }
 const closePwdModal = () => { pwdOpen.value = false }
 const confirmPwdChange = async () => {
