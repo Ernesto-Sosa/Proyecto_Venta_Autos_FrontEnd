@@ -18,7 +18,7 @@
         <tr v-for="v in ventas" :key="v.venta_id" class="border-b border-[#a19b9c] hover:bg-gray-50 transition-colors">
           <td class="px-6 py-4 text-[#12161e] font-semibold">{{ formatFecha(v.fecha) }}</td>
           <td class="px-6 py-4 text-[#12161e]">{{ getUsuarioNombre(v.usuario_id) }}</td>
-          <td class="px-6 py-4 text-[#12161e]">{{ getVehiculoNombre(v.vehiculo_id) }}</td>
+          <td class="px-6 py-4 text-[#12161e]">{{ getVehiculoNombre(v) }}</td>
           <td class="px-6 py-4 text-[#12161e]">${{ formatPrecio(v.precio_final) }}</td>
           <td class="px-6 py-4 text-[#a19b9c]">{{ v.estado_venta }}</td>
           <td class="px-6 py-4 text-center">
@@ -41,6 +41,8 @@ interface Venta {
   usuario_id: number
   vehiculo_id: number
   estado_venta: string
+  vehiculo_marca?: string
+  vehiculo_modelo?: string
 }
 
 interface Usuario { usuario_id: number; nombre: string; apellido: string }
@@ -69,8 +71,12 @@ const getUsuarioNombre = (id: number) => {
   return u ? `${u.nombre} ${u.apellido}` : `Usuario ${id}`
 }
 
-const getVehiculoNombre = (id: number) => {
-  const v = props.vehiculos.find(v => v.vehiculo_id === id)
-  return v ? `${v.marca} ${v.modelo}` : `Vehículo ${id}`
+const getVehiculoNombre = (venta: Venta) => {
+  if (venta.vehiculo_marca || venta.vehiculo_modelo) {
+    const partes = [venta.vehiculo_marca, venta.vehiculo_modelo].filter(Boolean)
+    if (partes.length) return partes.join(' ')
+  }
+  const v = props.vehiculos.find(v => v.vehiculo_id === venta.vehiculo_id)
+  return v ? `${v.marca} ${v.modelo}` : `Vehículo ${venta.vehiculo_id}`
 }
 </script>

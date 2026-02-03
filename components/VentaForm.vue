@@ -10,15 +10,6 @@
         <input v-model.number="formData.precio_final" type="number" min="0" step="1" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" required />
       </div>
       <div>
-        <label class="block text-sm font-semibold text-[#12161e] mb-2">Estado</label>
-        <select v-model="formData.estado_venta" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" required>
-          <option value="Pendiente">Pendiente</option>
-          <option value="Procesando">Procesando</option>
-          <option value="Completada">Completada</option>
-          <option value="Cancelada">Cancelada</option>
-        </select>
-      </div>
-      <div>
         <label class="block text-sm font-semibold text-[#12161e] mb-2">Usuario</label>
         <select v-model.number="formData.usuario_id" class="w-full px-4 py-2 border-2 border-[#a19b9c] rounded focus:outline-none focus:border-[#12161e]" required>
           <option v-for="u in usuarios" :key="u.usuario_id" :value="u.usuario_id">{{ u.nombre }} {{ u.apellido }}</option>
@@ -47,7 +38,6 @@ interface VentaFormData {
   precio_final: number
   usuario_id: number
   vehiculo_id: number
-  estado_venta: string
 }
 
 interface Props {
@@ -65,7 +55,6 @@ const formData = ref<VentaFormData>({
   precio_final: props.initialData.precio_final ?? 0,
   usuario_id: props.initialData.usuario_id ?? (props.usuarios[0]?.usuario_id || 1),
   vehiculo_id: props.initialData.vehiculo_id ?? (props.vehiculos[0]?.vehiculo_id || 1),
-  estado_venta: props.initialData.estado_venta ?? 'Pendiente',
 })
 
 const emit = defineEmits<{ submit: [formData: VentaFormData] }>()
@@ -88,7 +77,6 @@ watch(() => props.initialData, (newVal) => {
       precio_final: newVal.precio_final ?? 0,
       usuario_id: newVal.usuario_id ?? (props.usuarios[0]?.usuario_id || 1),
       vehiculo_id: newVal.vehiculo_id ?? (props.vehiculos[0]?.vehiculo_id || 1),
-      estado_venta: newVal.estado_venta ?? 'Pendiente',
     }
   }
 }, { deep: true, immediate: true })

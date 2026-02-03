@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-white px-6 py-12">
-    <div class="w-full max-w-lg bg-white shadow-md rounded-lg p-8">
+    <div class="w-full max-w-lg bg-white shadow-md rounded-lg p-8 border-2 border-[#a19b9c] focus-within:border-[#12161e] transition-colors">
       <h1 class="text-2xl font-bold text-[#12161e] mb-6">Crear cuenta</h1>
 
       <form @submit.prevent="onSubmit" class="grid grid-cols-1 md:grid-cols-2 gap-4">

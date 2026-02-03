@@ -13,7 +13,7 @@
 
       <div v-else class="bg-white rounded-lg shadow p-6 space-y-4">
         <div class="flex items-center gap-4">
-          <img :src="me?.avatar_url || '/images/avatars/car-1.svg'" alt="Avatar" class="w-20 h-20 rounded-full ring-2 ring-white object-cover" />
+          <img :src="avatarSrc" alt="Avatar" class="w-20 h-20 rounded-full ring-2 ring-white object-cover" />
           <div>
             <p class="text-lg font-semibold text-[#12161e]">{{ me?.nombre }} {{ me?.apellido }}</p>
             <button @click="openAvatarModal" class="mt-2 px-3 py-1 text-sm border-2 border-[#12161e] text-[#12161e] rounded hover:bg-[#12161e] hover:text-white transition-colors">Cambiar avatar</button>
@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Modal from '~/components/Modal.vue'
 import { useState, useFetch, navigateTo, useCookie } from '#imports'
 
@@ -173,6 +173,12 @@ const { data, error, pending } = useFetch<any>('http://localhost:3000/api/auth/m
 if (data.value) user.value = data.value
 
 const me = user
+
+const avatarSrc = computed(() => {
+  const url = me.value?.avatar_url
+  if (!url) return '/images/avatars/car-1.svg'
+  return url.startsWith('/uploads') ? `http://localhost:3000${url}` : url
+})
 
 // Cambiar contraseña
 const pwdOpen = ref(false)

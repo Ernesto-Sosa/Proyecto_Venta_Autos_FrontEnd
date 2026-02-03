@@ -31,7 +31,7 @@
           <div class="hidden sm:ml-6 sm:flex sm:items-center" v-if="isAuthenticated">
             <div class="relative ml-3">
               <div class="flex items-center">
-                <img :src="user?.avatar_url || '/images/avatars/car-1.svg'" alt="Avatar" class="w-8 h-8 rounded-full ring-2 ring-white mr-2" />
+                <img :src="avatarSrc" alt="Avatar" class="w-8 h-8 rounded-full ring-2 ring-white mr-2" />
                 <NuxtLink 
                   to="/perfil" 
                   class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium"
@@ -96,7 +96,7 @@
                 @click="isMobileMenuOpen = false"
               >
                 <span class="inline-flex items-center gap-2">
-                  <img :src="user?.avatar_url || '/images/avatars/car-1.svg'" alt="Avatar" class="w-6 h-6 rounded-full ring-2 ring-white" />
+                  <img :src="avatarSrc" alt="Avatar" class="w-6 h-6 rounded-full ring-2 ring-white" />
                   Mi Perfil
                 </span>
               </NuxtLink>
@@ -140,6 +140,12 @@ onMounted(async () => {
     const { data, error } = await useFetch<any>('http://localhost:3000/api/auth/me', { server: false, headers: token.value ? { Authorization: `Bearer ${token.value}` } : {} })
     if (!error.value && data.value) user.value = data.value
   }
+})
+
+const avatarSrc = computed(() => {
+  const url = user.value?.avatar_url
+  if (!url) return '/images/avatars/car-1.svg'
+  return url.startsWith('/uploads') ? `http://localhost:3000${url}` : url
 })
 
 const navigation = computed(() => {
