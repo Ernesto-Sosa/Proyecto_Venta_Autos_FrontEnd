@@ -66,7 +66,7 @@
               <tr class="text-left text-gray-500 border-b">
                 <th class="py-2 pr-4">ID</th>
                 <th class="py-2 pr-4">Fecha</th>
-                <th class="py-2 pr-4">Usuario</th>
+                <th class="py-2 pr-4">Vendedor</th>
                 <th class="py-2 pr-4">Vehículo</th>
                 <th class="py-2 pr-4">Precio</th>
               </tr>
@@ -75,7 +75,7 @@
               <tr v-for="v in recentSales" :key="v.venta_id" class="border-b last:border-0">
                 <td class="py-2 pr-4">#{{ v.venta_id }}</td>
                 <td class="py-2 pr-4">{{ formatDate(v.fecha) }}</td>
-                <td class="py-2 pr-4">{{ v.usuario_id }}</td>
+                <td class="py-2 pr-4">{{ v.usuario?.nombre }} {{ v.usuario?.apellido }}</td>
                 <td class="py-2 pr-4">{{ v.vehiculo_marca || 'Vehículo' }} {{ v.vehiculo_modelo || v.vehiculo_id }}</td>
                 <td class="py-2 pr-4">${{ v.precio_final }}</td>
               </tr>
