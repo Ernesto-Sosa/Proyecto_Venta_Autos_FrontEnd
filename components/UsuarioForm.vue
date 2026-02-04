@@ -126,9 +126,9 @@ onMounted(() => {
 });
 
 // Guardar en localStorage cuando cambian los datos
-watch(() => formData.value, (newData) => {
+watch(formData, (newData) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
-}, { deep: true });
+}, { deep: true, flush: 'post' });
 
 watch(() => props.initialData, (newVal) => {
   if (newVal) {

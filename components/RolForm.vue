@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, watchEffect } from 'vue'
 
 const props = defineProps({
   initialData: {
@@ -62,12 +62,17 @@ onMounted(() => {
 
 // Guardar en localStorage cuando cambian los datos
 watch(
-  () => formData.value,
+  formData,
   (newData) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
   },
-  { deep: true }
+  { deep: true, flush: 'post' }
 )
+
+// Asegurar que los cambios se reflejen incluso sin eventos adicionales
+watchEffect(() => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData.value))
+})
 
 watch(
   () => props.initialData,
