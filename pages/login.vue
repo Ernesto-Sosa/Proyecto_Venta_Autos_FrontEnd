@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useCookie, useState } from '#imports'
+import { useCookie, useState, useSeoMeta, useHead } from '#imports'
 definePageMeta({ layout: false })
 
 const email = ref('')
@@ -103,4 +103,12 @@ const resetToStep1 = () => {
   challenge.value = ''
   code.value = ''
 }
+
+useSeoMeta({
+  title: 'Iniciar sesión',
+  description: 'Accede a AutoSales para gestionar vehículos, ventas y citas.',
+  ogTitle: 'Iniciar sesión',
+  ogDescription: 'Accede a AutoSales para gestionar vehículos, ventas y citas.',
+})
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 </script>

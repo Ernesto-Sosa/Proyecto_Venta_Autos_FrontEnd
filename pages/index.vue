@@ -10,9 +10,9 @@
 
         <!-- Center: Welcome Text -->
         <div class="flex-1 text-center">
-          <h1 class="text-3xl font-bold text-[#12161e] tracking-tight">
+          <p class="text-3xl font-bold text-[#12161e] tracking-tight">
             AutoSales
-          </h1>
+          </p>
           <p class="text-[#a19b9c] text-sm mt-1">Tu plataforma de venta de autos</p>
         </div>
 
@@ -48,21 +48,19 @@
       <!-- Hero -->
       <section class="relative h-[78vh] md:h-[88vh]">
         <div class="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop" alt="Carros en carretera" class="w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-black/50"></div>
+          <img
+            src="/images/salir-a-carretera-gonhergo.jpg"
+            alt="Carros en carretera"
+            class="w-full h-full object-cover"
+            width="1600"
+            height="900"
+            fetchpriority="high"
+          />
+          <div class="absolute inset-0 bg-black/20"></div>
         </div>
         <div class="relative z-10 h-full max-w-5xl mx-auto px-6 flex flex-col items-center justify-center text-center">
-          <h1 class="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-3">AutoSales</h1>
-          <p class="text-white/90 text-xl md:text-2xl mb-6">Encuentra tu auto perfecto</p>
-          <div class="w-full max-w-2xl flex items-center bg-white rounded-full shadow-lg overflow-hidden">
-            <div class="px-4 text-[#a19b9c]">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
-              </svg>
-            </div>
-            <input v-model="searchQuery" @keyup.enter="doSearch" type="text" placeholder="Buscar por marca, modelo, color" class="flex-1 px-2 py-3 outline-none text-[#12161e]" />
-            <button @click="doSearch" class="px-5 py-3 bg-[#12161e] text-white font-semibold hover:bg-opacity-90">Buscar</button>
-          </div>
+          <h1 class="text-5xl md:text-6xl font-extrabold text-[#12161e] tracking-tight mb-3">AutoSales</h1>
+          <p class="text-[#12161e] text-xl md:text-2xl mb-6">Encuentra tu auto perfecto</p>
           <!-- filtros rápidos eliminados -->
         </div>
       </section>
@@ -72,17 +70,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { navigateTo } from '#imports'
+import { useSeoMeta, useHead, useRuntimeConfig } from '#imports'
 
 definePageMeta({
   layout: false,
 })
 
-const searchQuery = ref('')
-const doSearch = () => {
-  const q = searchQuery.value.trim()
-  if (q) return navigateTo({ path: '/vehiculos', query: { q } })
-  return navigateTo('/vehiculos')
-}
+
+useSeoMeta({
+  title: 'AutoSales — Encuentra tu auto perfecto',
+  description: 'Compra y venta de autos. Busca por marca y modelo y reserva tu prueba de manejo.',
+  ogTitle: 'AutoSales — Encuentra tu auto perfecto',
+  ogDescription: 'Compra y venta de autos. Busca por marca y modelo y reserva tu prueba de manejo.',
+  ogImage: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop',
+  twitterCard: 'summary_large_image',
+})
+
+const config = useRuntimeConfig()
+const site = config.public.siteUrl
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'AutoSales',
+        url: site,
+        logo: `${site}/icon.png`,
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        url: site,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${site}/vehiculos?q={search_term_string}`,
+          'query-input': 'required name=search_term_string'
+        }
+      })
+    }
+  ]
+})
 </script>

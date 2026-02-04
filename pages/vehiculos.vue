@@ -42,7 +42,18 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="v in vehiculosDisponiblesFiltrados" :key="v.vehiculo_id" class="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
               <div class="h-44 w-full bg-gray-100">
-                <img v-if="v.foto_url" :src="imageUrl(v.foto_url)" alt="Foto del vehículo" class="w-full h-44 object-cover" />
+                <NuxtImg
+                  v-if="v.foto_url"
+                  :src="imageUrl(v.foto_url)"
+                  alt="Foto del vehículo"
+                  class="w-full h-44 object-cover"
+                  :width="640"
+                  :height="360"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  format="webp"
+                  loading="lazy"
+                  placeholder="blur"
+                />
                 <div v-else class="w-full h-44 flex items-center justify-center text-gray-400 text-sm">Sin foto</div>
               </div>
               <div class="p-4 space-y-2">
@@ -138,7 +149,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import { useRoute, useState } from '#imports'
+import { useRoute, useState, useSeoMeta, useHead } from '#imports'
 import Modal from '~/components/Modal.vue'
 import VehiculoForm from '~/components/VehiculoForm.vue'
 import VehiculoTable from '~/components/VehiculoTable.vue'
@@ -475,4 +486,12 @@ const confirmBooking = async () => {
     bookingLoading.value = false
   }
 }
+
+useSeoMeta({
+  title: computed(() => isCliente.value ? 'Vehículos disponibles' : 'Gestión de Vehículos'),
+  description: 'Explora el catálogo de vehículos en AutoSales.',
+  ogTitle: computed(() => isCliente.value ? 'Vehículos disponibles' : 'Gestión de Vehículos'),
+  ogDescription: 'Explora el catálogo de vehículos en AutoSales.',
+})
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 </script>

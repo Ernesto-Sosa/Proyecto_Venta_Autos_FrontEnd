@@ -100,6 +100,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useSeoMeta, useHead } from '#imports'
 import Modal from '~/components/Modal.vue'
 import VentaForm from '~/components/VentaForm.vue'
 import VentaTable from '~/components/VentaTable.vue'
@@ -296,4 +297,12 @@ const handleDelete = async () => {
     }
   }
 }
+
+useSeoMeta({
+  title: 'Gestión de Ventas',
+  description: 'Listado y registro de ventas realizadas en AutoSales.',
+  ogTitle: 'Gestión de Ventas',
+  ogDescription: 'Listado y registro de ventas realizadas en AutoSales.',
+})
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 </script>

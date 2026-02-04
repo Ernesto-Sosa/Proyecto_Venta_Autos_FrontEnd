@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, computed } from 'vue'
-import { useFetch, navigateTo } from '#imports'
+import { useFetch, navigateTo, useSeoMeta, useHead } from '#imports'
 definePageMeta({ layout: 'auth' })
 interface Rol { rol_id: number; nombre_rol: string; descripcion: string }
 const { data: rolesData } = useFetch<Rol[]>('http://localhost:3000/api/roles', { server: false })
@@ -112,4 +112,12 @@ const onSubmit = async () => {
     loading.value = false
   }
 }
+
+useSeoMeta({
+  title: 'Crear cuenta',
+  description: 'Regístrate en AutoSales para reservar pruebas de manejo y gestionar tus compras.',
+  ogTitle: 'Crear cuenta',
+  ogDescription: 'Regístrate en AutoSales para reservar pruebas de manejo y gestionar tus compras.',
+})
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 </script>

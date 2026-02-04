@@ -161,6 +161,7 @@ const navigation = computed(() => {
       { name: 'Vehículos', href: '/vehiculos' },
       { name: 'Citas', href: '/citas' },
       { name: 'Ventas', href: '/ventas' },
+      { name: 'Trazas', href: '/trazas' },
     )
   } else if (role === 'vendedor') {
     // Vendedor puede ver Vehículos, Citas y Ventas
@@ -181,7 +182,12 @@ const isActive = (path: string) => {
   return route.path === path || (path !== '/' && route.path.startsWith(path));
 };
 
-const logout = () => {
+const logout = async () => {
+  try {
+    if (token.value) {
+      await $fetch('http://localhost:3000/api/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${token.value}` } })
+    }
+  } catch (e) {}
   token.value = null
   user.value = null
   navigateTo('/')
