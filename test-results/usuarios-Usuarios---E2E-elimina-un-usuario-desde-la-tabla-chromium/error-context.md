@@ -1,0 +1,83 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - link "AutoSales" [ref=e9] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e10]:
+            - link "Inicio" [ref=e11] [cursor=pointer]:
+              - /url: /
+            - link "Roles" [ref=e12] [cursor=pointer]:
+              - /url: /roles
+            - link "Usuarios" [ref=e13] [cursor=pointer]:
+              - /url: /usuarios
+            - link "Vehículos" [ref=e14] [cursor=pointer]:
+              - /url: /vehiculos
+            - link "Citas" [ref=e15] [cursor=pointer]:
+              - /url: /citas
+            - link "Ventas" [ref=e16] [cursor=pointer]:
+              - /url: /ventas
+            - link "Trazas" [ref=e17] [cursor=pointer]:
+              - /url: /trazas
+        - generic [ref=e20]:
+          - img "Avatar" [ref=e21]
+          - link "Mi Perfil" [ref=e22] [cursor=pointer]:
+            - /url: /perfil
+          - button "Cerrar Sesión" [ref=e23]:
+            - generic [ref=e24]: Cerrar Sesión
+            - img [ref=e25]
+    - main [ref=e28]:
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - heading "Gestión de Usuarios" [level=1] [ref=e34]
+              - paragraph [ref=e35]: Administra los usuarios del sistema
+            - button "Nuevo Usuario" [ref=e36]:
+              - img [ref=e37]
+              - text: Nuevo Usuario
+          - table [ref=e41]:
+            - rowgroup [ref=e42]:
+              - row "Nombre Email Teléfono Rol Acciones" [ref=e43]:
+                - columnheader "Nombre" [ref=e44]
+                - columnheader "Email" [ref=e45]
+                - columnheader "Teléfono" [ref=e46]
+                - columnheader "Rol" [ref=e47]
+                - columnheader "Acciones" [ref=e48]
+            - rowgroup [ref=e49]:
+              - row "Juan Pérez juan@example.com 123456789 Vendedor Editar Eliminar" [ref=e50]:
+                - cell "Juan Pérez" [ref=e51]
+                - cell "juan@example.com" [ref=e52]
+                - cell "123456789" [ref=e53]
+                - cell "Vendedor" [ref=e54]
+                - cell "Editar Eliminar" [ref=e55]:
+                  - generic [ref=e56]:
+                    - button "Editar" [ref=e57]
+                    - button "Eliminar" [active] [ref=e58]
+        - generic [ref=e60]:
+          - heading "Confirmar eliminación" [level=3] [ref=e61]
+          - paragraph [ref=e62]: ¿Estás seguro de que deseas eliminar este usuario?
+          - generic [ref=e63]:
+            - button "Cancelar" [ref=e64]
+            - button "Eliminar" [ref=e65]
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e66]:
+    - button "Toggle Nuxt DevTools" [ref=e67] [cursor=pointer]:
+      - img [ref=e68]
+    - generic "Page load time" [ref=e71]:
+      - generic [ref=e72]: "153"
+      - generic [ref=e73]: ms
+    - button "Toggle Component Inspector" [ref=e75] [cursor=pointer]:
+      - img [ref=e76]
+```

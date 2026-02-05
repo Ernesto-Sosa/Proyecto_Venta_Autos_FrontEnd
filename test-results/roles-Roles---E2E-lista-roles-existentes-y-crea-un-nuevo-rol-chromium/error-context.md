@@ -1,0 +1,82 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - link "AutoSales" [ref=e9] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e10]:
+            - link "Inicio" [ref=e11] [cursor=pointer]:
+              - /url: /
+            - link "Roles" [ref=e12] [cursor=pointer]:
+              - /url: /roles
+            - link "Usuarios" [ref=e13] [cursor=pointer]:
+              - /url: /usuarios
+            - link "Vehículos" [ref=e14] [cursor=pointer]:
+              - /url: /vehiculos
+            - link "Citas" [ref=e15] [cursor=pointer]:
+              - /url: /citas
+            - link "Ventas" [ref=e16] [cursor=pointer]:
+              - /url: /ventas
+            - link "Trazas" [ref=e17] [cursor=pointer]:
+              - /url: /trazas
+        - generic [ref=e20]:
+          - img "Avatar" [ref=e21]
+          - link "Mi Perfil" [ref=e22] [cursor=pointer]:
+            - /url: /perfil
+          - button "Cerrar Sesión" [ref=e23]:
+            - generic [ref=e24]: Cerrar Sesión
+            - img [ref=e25]
+    - main [ref=e28]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - heading "Gestión de Roles" [level=1] [ref=e34]
+            - paragraph [ref=e35]: Administra los roles del sistema
+          - button "Nuevo Rol" [ref=e36]:
+            - img [ref=e37]
+            - text: Nuevo Rol
+        - table [ref=e41]:
+          - rowgroup [ref=e42]:
+            - row "ID Nombre del Rol Descripción Acciones" [ref=e43]:
+              - columnheader "ID" [ref=e44]
+              - columnheader "Nombre del Rol" [ref=e45]
+              - columnheader "Descripción" [ref=e46]
+              - columnheader "Acciones" [ref=e47]
+          - rowgroup [ref=e48]:
+            - row "1 Admin Control total Editar Eliminar" [ref=e49]:
+              - cell "1" [ref=e50]
+              - cell "Admin" [ref=e51]
+              - cell "Control total" [ref=e52]
+              - cell "Editar Eliminar" [ref=e53]:
+                - generic [ref=e54]:
+                  - button "Editar" [ref=e55]
+                  - button "Eliminar" [ref=e56]
+            - row "2 Vendedor Gestiona ventas Editar Eliminar" [ref=e57]:
+              - cell "2" [ref=e58]
+              - cell "Vendedor" [ref=e59]
+              - cell "Gestiona ventas" [ref=e60]
+              - cell "Editar Eliminar" [ref=e61]:
+                - generic [ref=e62]:
+                  - button "Editar" [ref=e63]
+                  - button "Eliminar" [ref=e64]
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e65]:
+    - button "Toggle Nuxt DevTools" [ref=e66] [cursor=pointer]:
+      - img [ref=e67]
+    - generic "Page load time" [ref=e70]:
+      - generic [ref=e71]: "198"
+      - generic [ref=e72]: ms
+    - button "Toggle Component Inspector" [ref=e74] [cursor=pointer]:
+      - img [ref=e75]
+```
